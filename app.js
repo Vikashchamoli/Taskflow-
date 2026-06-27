@@ -49,12 +49,44 @@ const toast = document.querySelector("#toast");
 const notificationDrawer = document.querySelector("#notificationDrawer");
 const profileMenu = document.querySelector("#profileMenu");
 const sidebar = document.querySelector("#sidebar");
+const sceneCanvas = document.querySelector("#sceneCanvas");
+const createButton = document.querySelector("#createButton");
+const createMenu = document.querySelector("#createMenu");
+const copilotButton = document.querySelector("#copilotButton");
+const copilotPanel = document.querySelector("#copilotPanel");
+const noteModal = document.querySelector("#noteModal");
+const noteForm = document.querySelector("#noteForm");
+const notes = [];
 
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add("show");
   window.clearTimeout(showToast.timer);
   showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2400);
+}
+
+function closeCreateMenu() {
+  createMenu.classList.remove("open");
+  createMenu.setAttribute("aria-hidden", "true");
+  createButton.setAttribute("aria-expanded", "false");
+}
+
+function openCopilotPanel(mode = "automation") {
+  const title = mode === "workflow" ? "Workflow builder" : "Copilot automation";
+  const status = mode === "workflow"
+    ? "Describe a workflow and Copilot will break it into tasks"
+    : "Ready to plan your next workflow";
+
+  document.querySelector("#copilotTitle").textContent = title;
+  document.querySelector("#copilotStatus").textContent = status;
+  copilotPanel.classList.add("open");
+  copilotPanel.setAttribute("aria-hidden", "false");
+  window.setTimeout(() => document.querySelector("#copilotPrompt").focus(), 120);
+}
+
+function closeCopilotPanel() {
+  copilotPanel.classList.remove("open");
+  copilotPanel.setAttribute("aria-hidden", "true");
 }
 
 function visibleTasks() {
@@ -80,10 +112,10 @@ function renderColumns() {
       <section class="task-column ${column.id}" data-column="${column.id}">
         <div class="column-title">
           <span>${column.title}</span>
-          <button class="ghost-button" data-menu="${column.id}" aria-label="${column.title} column menu">...</button>
+          <button class="ghost-button" type="button" data-menu="${column.id}" aria-label="${column.title} column menu">...</button>
         </div>
         <div class="task-list" data-dropzone="${column.id}">${cards || emptyState(column.id)}</div>
-        <button class="add-inline" data-add-status="${column.id}">+ Add Task</button>
+        <button class="add-inline" type="button" data-add-status="${column.id}">+ Add Task</button>
       </section>
     `;
   }).join("");
@@ -100,7 +132,7 @@ function taskTemplate(task) {
     <article class="task-card" draggable="true" data-task-id="${task.id}">
       <div class="task-title">${escapeHtml(task.title)}</div>
       <div class="task-meta">
-        <button class="check ${done ? "done" : ""}" data-toggle-task="${task.id}" aria-label="Toggle ${escapeHtml(task.title)}">${done ? "✓" : ""}</button>
+        <button class="check ${done ? "done" : ""}" type="button" data-toggle-task="${task.id}" aria-label="Toggle ${escapeHtml(task.title)}"></button>
         <span class="priority ${task.priority}">${task.priority}</span>
         <span class="mini-avatar">${initials(task.person)}</span>
       </div>
@@ -179,6 +211,40 @@ function renderAll() {
   renderNotifications();
 }
 
+function setView(button) {
+  document.querySelectorAll(".nav-item").forEach((item) => item.classList.remove("active"));
+  button.classList.add("active");
+
+  const label = button.querySelector("span:nth-child(2)").textContent;
+  document.querySelector("#activeViewLabel").textContent = label;
+  document.querySelector("#viewSubtitle").textContent = viewSubtitle(button.dataset.view);
+  showToast(`${label} opened`);
+}
+
+function setSubmenu(menuName, isOpen = true) {
+  const isProjects = menuName === "projects";
+  const navButton = document.querySelector(`[data-view="${menuName}"]`);
+  const subList = document.querySelector(isProjects ? "#projectsSub" : "#teamSub");
+  const otherButton = document.querySelector(`[data-view="${isProjects ? "team" : "projects"}"]`);
+  const otherSubList = document.querySelector(isProjects ? "#teamSub" : "#projectsSub");
+
+  navButton.classList.toggle("open", isOpen);
+  subList.classList.toggle("open", isOpen);
+  otherButton.classList.remove("open");
+  otherSubList.classList.remove("open");
+}
+
+function closeSubmenus() {
+  document.querySelectorAll(".nav-item.has-toggle").forEach((button) => button.classList.remove("open"));
+  document.querySelectorAll(".sub-list").forEach((list) => list.classList.remove("open"));
+}
+
+function setSubSelection(listSelector, value, attr) {
+  document.querySelectorAll(`${listSelector} button`).forEach((button) => {
+    button.classList.toggle("active", button.dataset[attr] === value);
+  });
+}
+
 function openTaskModal(status = "todo") {
   document.querySelector("#taskStatus").value = status;
   taskModal.showModal();
@@ -186,6 +252,42 @@ function openTaskModal(status = "todo") {
 }
 
 document.querySelector("#addTaskTop").addEventListener("click", () => openTaskModal("todo"));
+
+copilotButton.addEventListener("click", () => {
+  closeCreateMenu();
+  openCopilotPanel("automation");
+});
+
+createButton.addEventListener("click", (event) => {
+  event.stopPropagation();
+  const isOpen = createMenu.classList.toggle("open");
+  createMenu.setAttribute("aria-hidden", String(!isOpen));
+  createButton.setAttribute("aria-expanded", String(isOpen));
+});
+
+createMenu.addEventListener("click", (event) => {
+  const action = event.target.closest("[data-create-action]")?.dataset.createAction;
+  if (!action) return;
+  closeCreateMenu();
+
+  if (action === "quick") {
+    openTaskModal("todo");
+    showToast("Quick capture opened");
+  }
+
+  if (action === "note") {
+    noteModal.showModal();
+    window.setTimeout(() => document.querySelector("#noteTitle").focus(), 80);
+  }
+
+  if (action === "workflow") {
+    openCopilotPanel("workflow");
+  }
+
+  if (action === "copilot") {
+    openCopilotPanel("automation");
+  }
+});
 
 document.querySelector("#searchInput").addEventListener("input", (event) => {
   searchTerm = event.target.value;
@@ -256,19 +358,14 @@ taskForm.addEventListener("submit", (event) => {
 
 document.querySelectorAll(".nav-item").forEach((button) => {
   button.addEventListener("click", () => {
-  document.querySelectorAll(".nav-item").forEach((item) => item.classList.remove("active"));
-    button.classList.add("active");
-
-    if (button.classList.contains("has-toggle")) {
-      button.classList.toggle("open");
-      const sub = button.dataset.view === "projects" ? "#projectsSub" : "#teamSub";
-      document.querySelector(sub).classList.toggle("open");
+    const isToggle = button.classList.contains("has-toggle");
+    const shouldOpen = isToggle ? !button.classList.contains("open") : false;
+    setView(button);
+    if (isToggle) {
+      setSubmenu(button.dataset.view, shouldOpen);
+    } else {
+      closeSubmenus();
     }
-
-    const label = button.querySelector("span:nth-child(2)").textContent;
-    document.querySelector("#activeViewLabel").textContent = label;
-    document.querySelector("#viewSubtitle").textContent = viewSubtitle(button.dataset.view);
-    showToast(`${label} opened`);
   });
 });
 
@@ -289,19 +386,27 @@ function viewSubtitle(view) {
 document.querySelector("#projectsSub").addEventListener("click", (event) => {
   const button = event.target.closest("[data-project]");
   if (!button) return;
-  projectFilter = projectFilter === button.dataset.project ? "" : button.dataset.project;
+  projectFilter = button.dataset.project;
   personFilter = "";
+  setSubSelection("#projectsSub", projectFilter, "project");
+  setSubSelection("#teamSub", "", "person");
+  setView(document.querySelector('[data-view="projects"]'));
+  setSubmenu("projects", true);
   renderColumns();
-  showToast(projectFilter ? `Filtered by ${projectFilter}` : "Project filter cleared");
+  showToast(projectFilter ? `Filtered by ${projectFilter}` : "Showing all projects");
 });
 
 document.querySelector("#teamSub").addEventListener("click", (event) => {
   const button = event.target.closest("[data-person]");
   if (!button) return;
-  personFilter = personFilter === button.dataset.person ? "" : button.dataset.person;
+  personFilter = button.dataset.person;
   projectFilter = "";
+  setSubSelection("#teamSub", personFilter, "person");
+  setSubSelection("#projectsSub", "", "project");
+  setView(document.querySelector('[data-view="team"]'));
+  setSubmenu("team", true);
   renderColumns();
-  showToast(personFilter ? `Filtered by ${personFilter}` : "Team filter cleared");
+  showToast(personFilter ? `Filtered by ${personFilter}` : "Showing all members");
 });
 
 document.querySelectorAll(".reminder-item").forEach((item) => {
@@ -322,6 +427,12 @@ document.querySelector("#closeNotifications").addEventListener("click", () => {
   notificationDrawer.setAttribute("aria-hidden", "true");
 });
 
+document.querySelector("#closeCopilot").addEventListener("click", closeCopilotPanel);
+
+copilotPanel.addEventListener("click", (event) => {
+  if (event.target === copilotPanel) closeCopilotPanel();
+});
+
 notificationDrawer.addEventListener("click", (event) => {
   if (event.target === notificationDrawer) {
     notificationDrawer.classList.remove("open");
@@ -337,6 +448,47 @@ document.querySelector("#clearNotifications").addEventListener("click", () => {
 
 document.querySelector("#closeTaskModal").addEventListener("click", () => taskModal.close());
 document.querySelector("#cancelTask").addEventListener("click", () => taskModal.close());
+document.querySelector("#closeNoteModal").addEventListener("click", () => noteModal.close());
+document.querySelector("#cancelNote").addEventListener("click", () => noteModal.close());
+
+noteForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const title = document.querySelector("#noteTitle").value.trim();
+  const body = document.querySelector("#noteBody").value.trim();
+  if (!title) return;
+
+  notes.unshift({ title, body, createdAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) });
+  noteForm.reset();
+  noteModal.close();
+  showToast(`Note saved: ${title}`);
+});
+
+document.querySelector("#suggestWorkflow").addEventListener("click", () => {
+  document.querySelector("#copilotPrompt").value = "Create follow-up tasks for high priority work, remind the team tomorrow, and summarize project risks.";
+  document.querySelector("#copilotStatus").textContent = "Suggested workflow is ready to review";
+  showToast("Workflow suggestion added");
+});
+
+document.querySelector("#runAutomation").addEventListener("click", () => {
+  const prompt = document.querySelector("#copilotPrompt").value.trim();
+  if (!prompt) {
+    showToast("Add a workflow request first");
+    return;
+  }
+
+  tasks.unshift({
+    id: crypto.randomUUID(),
+    title: "Review Copilot automation plan",
+    status: "todo",
+    priority: "High",
+    project: "LaunchX",
+    person: "Alex",
+    due: "today"
+  });
+  document.querySelector("#copilotStatus").textContent = "Automation plan created and added to tasks";
+  renderAll();
+  showToast("Automation plan added to task board");
+});
 
 function toggleProfileMenu() {
   profileMenu.classList.toggle("open");
@@ -368,8 +520,94 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     profileMenu.classList.remove("open");
     notificationDrawer.classList.remove("open");
+    closeCopilotPanel();
+    closeCreateMenu();
     sidebar.classList.remove("open");
   }
 });
 
+document.addEventListener("click", (event) => {
+  if (!event.target.closest(".create-wrap")) closeCreateMenu();
+});
+
+function setupScene() {
+  if (!sceneCanvas) return;
+  const context = sceneCanvas.getContext("2d");
+  const shapes = Array.from({ length: 18 }, (_, index) => ({
+    x: (index * 97) % 1000,
+    y: 42 + ((index * 71) % 260),
+    z: 0.55 + ((index % 5) * 0.13),
+    size: 20 + ((index * 11) % 34),
+    color: ["#2869ff", "#05a99d", "#ff7b3b", "#8c56d7"][index % 4],
+    speed: 0.18 + (index % 4) * 0.05
+  }));
+
+  function resize() {
+    const box = sceneCanvas.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+    sceneCanvas.width = Math.max(1, Math.floor(box.width * ratio));
+    sceneCanvas.height = Math.max(1, Math.floor(box.height * ratio));
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+  }
+
+  function drawCube(x, y, size, color) {
+    const depth = size * 0.48;
+    context.beginPath();
+    context.moveTo(x, y);
+    context.lineTo(x + size, y + depth);
+    context.lineTo(x, y + depth * 2);
+    context.lineTo(x - size, y + depth);
+    context.closePath();
+    context.fillStyle = color;
+    context.globalAlpha = 0.22;
+    context.fill();
+
+    context.beginPath();
+    context.moveTo(x - size, y + depth);
+    context.lineTo(x, y + depth * 2);
+    context.lineTo(x, y + depth * 3.15);
+    context.lineTo(x - size, y + depth * 2.15);
+    context.closePath();
+    context.fillStyle = "#12326d";
+    context.globalAlpha = 0.12;
+    context.fill();
+
+    context.beginPath();
+    context.moveTo(x + size, y + depth);
+    context.lineTo(x, y + depth * 2);
+    context.lineTo(x, y + depth * 3.15);
+    context.lineTo(x + size, y + depth * 2.15);
+    context.closePath();
+    context.fillStyle = color;
+    context.globalAlpha = 0.16;
+    context.fill();
+    context.globalAlpha = 1;
+  }
+
+  function frame(time) {
+    const width = sceneCanvas.clientWidth;
+    const height = sceneCanvas.clientHeight;
+    context.clearRect(0, 0, width, height);
+    context.save();
+    context.translate(width * 0.06, 0);
+
+    shapes.forEach((shape, index) => {
+      const float = Math.sin(time * 0.001 * shape.speed + index) * 9;
+      const x = (shape.x % Math.max(width, 1)) + Math.sin(time * 0.0002 + index) * 18;
+      const y = shape.y * shape.z + float;
+      drawCube(x, y, shape.size * shape.z, shape.color);
+    });
+
+    context.restore();
+    window.requestAnimationFrame(frame);
+  }
+
+  resize();
+  window.addEventListener("resize", resize);
+  window.requestAnimationFrame(frame);
+}
+
+setSubSelection("#projectsSub", "", "project");
+setSubSelection("#teamSub", "", "person");
+setupScene();
 renderAll();

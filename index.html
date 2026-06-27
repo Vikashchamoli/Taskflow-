@@ -21,49 +21,52 @@
 
         <nav class="nav-list" aria-label="Main navigation">
           <button class="nav-item active" type="button" data-view="dashboard">
-            <span>Dashboard</span>
+            <span class="icon"><img src="./dashboard.png" height="20"></span><span>Dashboard</span>
           </button>
           <button class="nav-item" type="button" data-view="tasks">
-            <span>My Tasks</span>
+            <span class="icon"><img src="./my task.png" height="20"></span><span>My Tasks</span>
           </button>
           <button class="nav-item" type="button" data-view="calendar">
-            <span>Calendar</span>
+            <span class="icon"><img src="./calender.png" height="20"></span><span>Calendar</span>
           </button>
           <button class="nav-item has-toggle" type="button" data-view="projects">
-            <span>Projects</span><span class="chevron">v</span>
+            <span class="icon"><img src="./projects.png" height="20"></span><span>Projects</span><span class="chevron">v</span>
           </button>
           <div class="sub-list" id="projectsSub">
+            <button type="button" data-project="">All Projects</button>
             <button type="button" data-project="LaunchX">LaunchX</button>
             <button type="button" data-project="Content">Content</button>
             <button type="button" data-project="Client">Client Pitch</button>
           </div>
           <button class="nav-item" type="button" data-view="reminders">
-           <span>Reminders</span>
+            <span class="icon"><img src="./reminder.png" height="20"></span><span>Reminders</span>
           </button>
           <button class="nav-item has-toggle" type="button" data-view="team">
-            <span>Team</span><span class="chevron">v</span>
+            <span class="icon"><img src="./team.png" height="20"></span><span>Team</span><span class="chevron">v</span>
           </button>
           <div class="sub-list" id="teamSub">
+            <button type="button" data-person="">All Members</button>
             <button type="button" data-person="Alex">Alex</button>
             <button type="button" data-person="Maya">Maya</button>
             <button type="button" data-person="Nora">Nora</button>
           </div>
           <button class="nav-item" type="button" data-view="reports">
-            <span>Reports</span>
+            <span class="icon"><img src="./reports.png" height="20"></span><span>Reports</span>
           </button>
           <button class="nav-item" type="button" data-view="settings">
-            <span>Settings</span>
+            <span class="icon"><img src="./settings.png" height="20"></span><span>Settings</span>
           </button>
         </nav>
 
         <div class="rocket-art" aria-hidden="true">
-          <div class="spark spark-one"></div>
+          <img src="./robot.png" height="200px">
+          <!-- <div class="spark spark-one"></div>
           <div class="spark spark-two"></div>
           <div class="spark spark-three"></div>
           <div class="rocket">
             <div class="window"></div>
           </div>
-          <div class="flame"></div>
+          <div class="flame"></div> -->
         </div>
 
         <button class="profile-card" id="profileButton" type="button" aria-expanded="false">
@@ -79,21 +82,56 @@
       <div class="main-area">
         <header class="topbar">
           <button class="icon-button" id="openSidebar" type="button" aria-label="Open sidebar">
-            <span class="icon">menu</span>
+            <span class="icon"><img src="./home.png" height="20"></span>
           </button>
           <label class="search-box" for="searchInput">
             <span class="icon">search</span>
             <input id="searchInput" type="search" placeholder="Search tasks, projects, people..." />
           </label>
-
-
-          <button class="icon-button" id="openSidebar" type="button" aria-label="Open sidebar">
-            co- piolet automation
-          </button>
-
           <div class="top-actions">
+            <button class="copilot-button" id="copilotButton" type="button" aria-label="Open Copilot automation panel" style="box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;">
+              <span class="spark-icon"><img src="./auto.png" height="20"></span>
+              <span>Copilot automation</span>
+            </button>
+            <div class="create-wrap" style="style="box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;"">
+              <button class="create-button" id="createButton" type="button" aria-expanded="false" aria-haspopup="true" >
+                <span class="plus">+</span>
+                <span>Create</span>
+                
+              </button>
+              <div class="create-menu" id="createMenu" aria-hidden="true">
+                <button type="button" data-create-action="quick">
+                  <span class="option-icon violet">bolt</span>
+                  <span>
+                    <strong>Quick capture</strong>
+                    <small>Add a task in seconds</small>
+                  </span>
+                </button>
+                <button type="button" data-create-action="note">
+                  <span class="option-icon blue">note</span>
+                  <span>
+                    <strong>New Note</strong>
+                    <small>Capture a standalone note</small>
+                  </span>
+                </button>
+                <button type="button" data-create-action="workflow">
+                  <span class="option-icon purple">flow</span>
+                  <span>
+                    <strong>Workflow builder</strong>
+                    <small>Describe tasks, reminders, and schedules</small>
+                  </span>
+                </button>
+                <button type="button" data-create-action="copilot">
+                  <span class="option-icon orange">auto</span>
+                  <span>
+                    <strong>Copilot automation</strong>
+                    <small>Analyze your workspace and run confirmed plans</small>
+                  </span>
+                </button>
+              </div>
+            </div>
             <button class="icon-button notification-button" id="notificationButton" type="button" aria-label="Open notifications">
-              <span class="icon"><img src="bell.png"height="20"></span>
+              <span class="icon"><img src="./bell.png" height="20"></span>
               <span class="badge" id="notificationBadge">3</span>
             </button>
             <button class="avatar-button" id="avatarButton" type="button" aria-label="Open profile menu">AJ</button>
@@ -101,10 +139,11 @@
         </header>
 
         <main class="content">
+          <canvas class="scene-canvas" id="sceneCanvas" aria-hidden="true"></canvas>
           <section class="hero-strip">
             <div>
               <p class="eyebrow" id="activeViewLabel">Dashboard</p>
-              <h1 id="greeting">Good Morning, Alex!</h1>
+              <h1 id="greeting">Hello, Alex!</h1>
               <p id="viewSubtitle">Here is your day.</p>
             </div>
             <button class="primary-button" id="addTaskTop" type="button">
@@ -112,7 +151,7 @@
             </button>
           </section>
 
-          <section class="dashboard-grid">
+          <section class="dashboard-grid depth-grid">
             <div class="board-card panel">
               <div class="panel-header">
                 <h2>Task Board</h2>
@@ -125,7 +164,8 @@
               <div class="columns" id="columns"></div>
             </div>
 
-            <aside class="panel reminders-card">
+            <aside class="panel reminders-card" style="box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+  background: yellow;">
               <div class="panel-header">
                 <h2>Reminders</h2>
                 <button class="ghost-button" type="button" data-menu="reminders">...</button>
@@ -159,6 +199,7 @@
                 <div class="bar-chart" id="barChart" aria-label="Weekly progress chart"></div>
                 <div class="donut-wrap">
                   <div class="donut" id="donutChart"><span id="completionText">70%</span></div>
+                  
                   <p>Overall Completion</p>
                 </div>
               </div>
@@ -188,6 +229,47 @@
         </div>
         <div id="notificationList"></div>
         <button class="secondary-button full" id="clearNotifications" type="button">Mark all as read</button>
+      </div>
+    </div>
+
+    <div class="side-panel" id="copilotPanel" aria-hidden="true">
+      <div class="side-panel-card">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Automation</p>
+            <h2 id="copilotTitle">Copilot automation</h2>
+          </div>
+          <button class="icon-button" id="closeCopilot" type="button" aria-label="Close Copilot panel">x</button>
+        </div>
+        <div class="copilot-status">
+          <span class="pulse-dot"></span>
+          <span id="copilotStatus">Ready to plan your next workflow</span>
+        </div>
+        <label>
+          What should Copilot prepare?
+          <textarea id="copilotPrompt" rows="5" placeholder="Example: Plan follow-up tasks for LaunchX and schedule reminders for tomorrow."></textarea>
+        </label>
+        <div class="copilot-actions">
+          <button class="secondary-button" id="suggestWorkflow" type="button">Suggest plan</button>
+          <button class="primary-button" id="runAutomation" type="button">Run automation</button>
+        </div>
+        <div class="automation-list" id="automationList">
+          <div class="automation-step">
+            <span>1</span>
+            <strong>Scan open tasks</strong>
+            <small>Review priorities and due dates.</small>
+          </div>
+          <div class="automation-step">
+            <span>2</span>
+            <strong>Draft next actions</strong>
+            <small>Create a focused plan for today.</small>
+          </div>
+          <div class="automation-step">
+            <span>3</span>
+            <strong>Wait for confirmation</strong>
+            <small>No changes run without approval.</small>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -232,6 +314,27 @@
         <menu class="modal-actions">
           <button class="secondary-button" type="button" id="cancelTask">Cancel</button>
           <button class="primary-button" id="saveTask" type="submit" value="default">Create Task</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <dialog class="task-modal" id="noteModal">
+      <form method="dialog" id="noteForm">
+        <div class="panel-header modal-header">
+          <h2>New Note</h2>
+          <button class="icon-button" type="button" id="closeNoteModal" aria-label="Close note modal">x</button>
+        </div>
+        <label>
+          Note title
+          <input id="noteTitle" required maxlength="70" placeholder="Give this note a title..." />
+        </label>
+        <label>
+          Details
+          <textarea id="noteBody" rows="5" placeholder="Capture a thought, meeting detail, or project note."></textarea>
+        </label>
+        <menu class="modal-actions">
+          <button class="secondary-button" type="button" id="cancelNote">Cancel</button>
+          <button class="primary-button" type="submit">Save Note</button>
         </menu>
       </form>
     </dialog>
