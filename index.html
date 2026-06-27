@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlowState Task Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand-row">
+          <button class="icon-button mobile-only" id="closeSidebar" type="button" aria-label="Close sidebar">
+            <span class="icon">x</span>
+          </button>
+          <div class="logo-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <span class="brand-name">FlowState</span>
+        </div>
+
+        <nav class="nav-list" aria-label="Main navigation">
+          <button class="nav-item active" type="button" data-view="dashboard">
+            <span>Dashboard</span>
+          </button>
+          <button class="nav-item" type="button" data-view="tasks">
+            <span>My Tasks</span>
+          </button>
+          <button class="nav-item" type="button" data-view="calendar">
+            <span>Calendar</span>
+          </button>
+          <button class="nav-item has-toggle" type="button" data-view="projects">
+            <span>Projects</span><span class="chevron">v</span>
+          </button>
+          <div class="sub-list" id="projectsSub">
+            <button type="button" data-project="LaunchX">LaunchX</button>
+            <button type="button" data-project="Content">Content</button>
+            <button type="button" data-project="Client">Client Pitch</button>
+          </div>
+          <button class="nav-item" type="button" data-view="reminders">
+           <span>Reminders</span>
+          </button>
+          <button class="nav-item has-toggle" type="button" data-view="team">
+            <span>Team</span><span class="chevron">v</span>
+          </button>
+          <div class="sub-list" id="teamSub">
+            <button type="button" data-person="Alex">Alex</button>
+            <button type="button" data-person="Maya">Maya</button>
+            <button type="button" data-person="Nora">Nora</button>
+          </div>
+          <button class="nav-item" type="button" data-view="reports">
+            <span>Reports</span>
+          </button>
+          <button class="nav-item" type="button" data-view="settings">
+            <span>Settings</span>
+          </button>
+        </nav>
+
+        <div class="rocket-art" aria-hidden="true">
+          <div class="spark spark-one"></div>
+          <div class="spark spark-two"></div>
+          <div class="spark spark-three"></div>
+          <div class="rocket">
+            <div class="window"></div>
+          </div>
+          <div class="flame"></div>
+        </div>
+
+        <button class="profile-card" id="profileButton" type="button" aria-expanded="false">
+          <span class="avatar">AJ</span>
+          <span class="profile-text">
+            <strong>Alex Johnson</strong>
+            <small>alex@example.com</small>
+          </span>
+          <span class="menu-dots">...</span>
+        </button>
+      </aside>
+
+      <div class="main-area">
+        <header class="topbar">
+          <button class="icon-button" id="openSidebar" type="button" aria-label="Open sidebar">
+            <span class="icon">menu</span>
+          </button>
+          <label class="search-box" for="searchInput">
+            <span class="icon">search</span>
+            <input id="searchInput" type="search" placeholder="Search tasks, projects, people..." />
+          </label>
+
+
+          <button class="icon-button" id="openSidebar" type="button" aria-label="Open sidebar">
+            co- piolet automation
+          </button>
+
+          <div class="top-actions">
+            <button class="icon-button notification-button" id="notificationButton" type="button" aria-label="Open notifications">
+              <span class="icon"><img src="bell.png"height="20"></span>
+              <span class="badge" id="notificationBadge">3</span>
+            </button>
+            <button class="avatar-button" id="avatarButton" type="button" aria-label="Open profile menu">AJ</button>
+          </div>
+        </header>
+
+        <main class="content">
+          <section class="hero-strip">
+            <div>
+              <p class="eyebrow" id="activeViewLabel">Dashboard</p>
+              <h1 id="greeting">Good Morning, Alex!</h1>
+              <p id="viewSubtitle">Here is your day.</p>
+            </div>
+            <button class="primary-button" id="addTaskTop" type="button">
+              <span class="plus">+</span> Add New Task
+            </button>
+          </section>
+
+          <section class="dashboard-grid">
+            <div class="board-card panel">
+              <div class="panel-header">
+                <h2>Task Board</h2>
+                <div class="segmented" role="tablist" aria-label="Task filter">
+                  <button class="active" type="button" data-filter="all">All</button>
+                  <button type="button" data-filter="high">High</button>
+                  <button type="button" data-filter="today">Today</button>
+                </div>
+              </div>
+              <div class="columns" id="columns"></div>
+            </div>
+
+            <aside class="panel reminders-card">
+              <div class="panel-header">
+                <h2>Reminders</h2>
+                <button class="ghost-button" type="button" data-menu="reminders">...</button>
+              </div>
+              <div class="reminder-group">
+                <h3>Due Today</h3>
+                <button class="reminder-item" type="button" data-reminder="Meeting @ 2 PM">
+                  <span class="reminder-icon orange">clock</span><span>Meeting @ 2 PM</span>
+                </button>
+                <button class="reminder-item" type="button" data-reminder="Send Proposal">
+                  <span class="reminder-icon coral">doc</span><span>Send Proposal</span>
+                </button>
+              </div>
+              <div class="reminder-group">
+                <h3>Tomorrow</h3>
+                <button class="reminder-item" type="button" data-reminder="Project Check-in">
+                  <span class="reminder-icon blue">cal</span><span>Project Check-in</span>
+                </button>
+              </div>
+            </aside>
+
+            <div class="panel progress-panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Progress Review</h2>
+                  <p>Tasks completed over 7 days</p>
+                </div>
+                <button class="ghost-button" type="button" data-menu="progress">...</button>
+              </div>
+              <div class="progress-content">
+                <div class="bar-chart" id="barChart" aria-label="Weekly progress chart"></div>
+                <div class="donut-wrap">
+                  <div class="donut" id="donutChart"><span id="completionText">70%</span></div>
+                  <p>Overall Completion</p>
+                </div>
+              </div>
+              <div class="chart-legend">
+                <span><i class="legend completed"></i> Completed</span>
+                <span><i class="legend progress"></i> In Progress</span>
+              </div>
+            </div>
+
+            <aside class="panel activity-card">
+              <div class="panel-header">
+                <h2>Daily Summary & Activity</h2>
+                <button class="ghost-button" type="button" data-menu="activity">...</button>
+              </div>
+              <div class="activity-list" id="activityList"></div>
+            </aside>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="drawer" id="notificationDrawer" aria-hidden="true">
+      <div class="drawer-card">
+        <div class="panel-header">
+          <h2>Notifications</h2>
+          <button class="icon-button" id="closeNotifications" type="button" aria-label="Close notifications">x</button>
+        </div>
+        <div id="notificationList"></div>
+        <button class="secondary-button full" id="clearNotifications" type="button">Mark all as read</button>
+      </div>
+    </div>
+
+    <div class="popover" id="profileMenu" aria-hidden="true">
+      <button type="button" data-profile-action="status">Set focus status</button>
+      <button type="button" data-profile-action="theme">Toggle dark sidebar</button>
+      <button type="button" data-profile-action="signout">Sign out demo</button>
+    </div>
+
+    <dialog class="task-modal" id="taskModal">
+      <form method="dialog" id="taskForm">
+        <div class="panel-header modal-header">
+          <h2>Add Task</h2>
+          <button class="icon-button" type="button" id="closeTaskModal" aria-label="Close add task modal">x</button>
+        </div>
+        <label>
+          Task name
+          <input id="taskTitle" required maxlength="70" placeholder="Write a clear task..." />
+        </label>
+        <div class="form-row">
+          <label>
+            Status
+            <select id="taskStatus">
+              <option value="todo">To Do</option>
+              <option value="progress">In Progress</option>
+              <option value="done">Completed</option>
+            </select>
+          </label>
+          <label>
+            Priority
+            <select id="taskPriority">
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </label>
+        </div>
+        <label>
+          Project
+          <input id="taskProject" maxlength="35" placeholder="Project name" />
+        </label>
+        <menu class="modal-actions">
+          <button class="secondary-button" type="button" id="cancelTask">Cancel</button>
+          <button class="primary-button" id="saveTask" type="submit" value="default">Create Task</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
